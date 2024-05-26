@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 
 @RequiredArgsConstructor
 @Controller
@@ -20,8 +21,9 @@ public class MainController {
     private final BureauServices bureauServices;
 
     @GetMapping("/")
-    public String home(@RequestParam(name = "title", required = false) String title, Model model) {
+    public String home(@RequestParam(name = "title", required = false) String title, Model model, Principal principal) {
         model.addAttribute("things", bureauServices.listThings(title));
+        model.addAttribute("user", bureauServices.getUserByPrincipal(principal));
         return "home";
     }
     @GetMapping("/things/{id}")
@@ -36,8 +38,8 @@ public class MainController {
     public String createThings(@RequestParam("file1") MultipartFile file1,
                                @RequestParam("file2") MultipartFile file2,
                                @RequestParam("file3") MultipartFile file3,
-                               Things things) throws IOException {
-        bureauServices.saveThings(things, file1, file2, file3 );
+                               Things things, Principal principal) throws IOException {
+        bureauServices.saveThings(principal,things, file1, file2, file3 );
         return "redirect:/";
     }
     @PostMapping("/things/delete/{id}")

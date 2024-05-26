@@ -36,12 +36,13 @@ public class Things {
     @Column(name = "city")
     private String city;
 
-    @Column(name = "sir")
-    private String sir;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "things")
     private List<Image> images = new ArrayList<>();
     private Long previewImageId;
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @JoinColumn
+    private User user;
     private LocalDateTime dateOfCreated;
 
     @PrePersist
