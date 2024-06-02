@@ -28,8 +28,6 @@ public class Image {
     @Lob
     @Column(name = "bytes", columnDefinition = "longblob")
     private byte[] bytes;
-//    @Lob
-//    private byte[] bytes;
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     private Things things;

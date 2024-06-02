@@ -6,12 +6,19 @@ import com.example.bureau1.repositories.BureauRepository;
 import com.example.bureau1.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -67,9 +74,21 @@ public class BureauServices {
         return image;
     }
 
-    public void deleteThing(Long id) {
-        bureauRepository.deleteById(id);
+public void delete(User userByPrincipal, Long id) {
+    Things things = bureauRepository.findByIdWithUser(id);
+
+    if (things != null) {
+        User thingsUser = things.getUser();
+        if (thingsUser != null && thingsUser.equals(userByPrincipal)) {
+            bureauRepository.delete(things);
+            bureauRepository.flush();
+        } else {
+            throw new IllegalArgumentException("Знахідка не належить користувачеві");
+        }
     }
+}
+
+
     public Things getThingsById(Long id){
         return bureauRepository.findById(id).orElse(null);
     }
